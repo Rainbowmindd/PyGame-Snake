@@ -1,5 +1,7 @@
 import pygame
 
+
+
 WIDTH, HEIGHT = 600, 400
 GRID_SIZE = 20
 
@@ -15,3 +17,7 @@ UP = (0, -GRID_SIZE)
 DOWN = (0, GRID_SIZE)
 LEFT = (-GRID_SIZE, 0)
 RIGHT = (GRID_SIZE, 0)
+
+#--other--
+MAX_ROUNDS=5
+POINTS_PER_APPLE=50
