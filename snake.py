@@ -2,12 +2,20 @@ import pygame
 from settings import GRID_SIZE, WIDTH, HEIGHT
 
 class Snake:
-    def __init__(self, color, start_pos, controls):
+    def __init__(self, color, start_pos, controls,player_name):
         self.body = [list(start_pos)]
         self.direction = None
         self.grow = False
         self.color = color
         self.controls = controls
+        self.can_move=False
+        self.score=0
+        self.player_name=player_name
+    
+    def reset(self,start_pos):
+        self.body = [list(start_pos)]
+        self.direction = None
+        self.grow = False
         self.can_move=False
     
     def move(self):
@@ -38,6 +46,9 @@ class Snake:
     
     def grow_snake(self):
         self.grow = True
+    
+    def add_points(self,points):
+        self.score+=points
     
     def draw(self,display):
         for segment in self.body:

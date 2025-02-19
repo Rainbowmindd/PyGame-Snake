@@ -2,6 +2,8 @@ import pygame
 from settings import WIDTH,HEIGHT,BLACK,GREEN,BLUE,UP,DOWN,LEFT,RIGHT
 from snake import Snake
 from apple import Apple
+from scoreboard import Scoreboard
+from menu import Menu
 
 class Game:
     def __init__(self):
@@ -25,7 +27,16 @@ class Game:
         })
         
         self.apple = Apple()
+        self.scoreboard = Scoreboard()
+        self.menu = Menu()
+        self.selected_option = 0
+        self.current_round=1
         self.running = True
+    
+    def reset_round(self):
+        self.snake1.reset((100, 100))
+        self.snake2.reset((300, 100))
+        self.apple.position = self.apple.randomize_position()
         
     def handle_events(self):
         for event in pygame.event.get():
