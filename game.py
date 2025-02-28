@@ -44,6 +44,8 @@ class Game:
         self.selected_option = 0
         self.current_round = 1
         self.running = True
+
+        self.apple_resets = 0
         
         
     def initialize_snake(self):
