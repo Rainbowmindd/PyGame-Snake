@@ -11,7 +11,7 @@ class Scoreboard:
             try:
                 with open(self.scores_file,"r") as f:
                     return json.load(f)
-            except json.JSONDecoderError:
+            except json.JSONDecodeError:
                 return []
         return []
     def save_scores(self):

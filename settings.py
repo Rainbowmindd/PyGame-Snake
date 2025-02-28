@@ -1,8 +1,6 @@
 import pygame
 
-
-
-WIDTH, HEIGHT = 600, 400
+WIDTH,HEIGHT=800,600
 GRID_SIZE = 20
 
 # -- colors---
