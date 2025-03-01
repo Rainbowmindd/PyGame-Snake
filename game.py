@@ -44,6 +44,8 @@ class Game:
         self.selected_option = 0
         self.current_round = 1
         self.running = True
+
+        self.apple_resets = 0
         
         
     def initialize_snake(self):
@@ -69,14 +71,13 @@ class Game:
         self.generate_safe_apple_position()
     
     def generate_safe_apple_position(self):
-        """Generate a new apple position that doesn't overlap with snakes"""
         max_attempts = 100
         attempts = 0
         
         while attempts < max_attempts:
             new_pos = self.apple.randomize_position()
             if self.snake1 is None or self.snake2 is None:
-                self.apple.position = new_pos
+                self.apple.add_apple(new_pos)
                 return
                 
 
@@ -85,18 +86,24 @@ class Game:
             
    
             if new_pos not in snake1_body and new_pos not in snake2_body:
-                self.apple.position = new_pos
+                self.apple.add_apple(new_pos)
                 return
                 
             attempts += 1
 
-        self.apple.position = ((self.GRID_WIDTH // 2) * self.GRID_SIZE, 
+        default_pos = ((self.GRID_WIDTH // 2) * self.GRID_SIZE, 
                               (self.GRID_HEIGHT // 2) * self.GRID_SIZE)
+        self.apple.position = default_pos
     
     def reset_round(self):
         self.snake1.reset(((self.GRID_WIDTH // 4) * self.GRID_SIZE, (self.GRID_HEIGHT // 2) * self.GRID_SIZE))
         self.snake2.reset(((3 * self.GRID_WIDTH // 4) * self.GRID_SIZE, (self.GRID_HEIGHT // 2) * self.GRID_SIZE))
         
+        self.apple.positions=[]
+        self.apple.spawn_interval=1000
+        self.apple.last_spawn_time=0
+        self.apple.last_spawn_time=pygame.time.get_ticks()
+
         self.generate_safe_apple_position()
 
     def handle_name_input(self):
@@ -182,6 +189,10 @@ class Game:
         return False
                 
     def update(self):
+
+        current_time=pygame.time.get_ticks()
+
+        self.apple.update(current_time)
       
         self.snake1.move()
         self.snake2.move()
@@ -189,20 +200,23 @@ class Game:
      
         snake1_head = tuple(self.snake1.body[0]) if isinstance(self.snake1.body[0], list) else self.snake1.body[0]
         snake2_head = tuple(self.snake2.body[0]) if isinstance(self.snake2.body[0], list) else self.snake2.body[0]
-        apple_pos = self.apple.position
+        #apple_pos = self.apple.position
         
         #apple collision
-        if snake1_head == apple_pos:
-            self.snake1.grow_snake()
-            self.snake1.add_points(POINTS_PER_APPLE)
-            self.generate_safe_apple_position()
-            self.apple_resets += 1
-                
-        elif snake2_head == apple_pos:
-            self.snake2.grow_snake()
-            self.snake2.add_points(POINTS_PER_APPLE)
-            self.generate_safe_apple_position()
-            self.apple_resets += 1
+        for apple_pos in self.apple.positions[:]:
+            if snake1_head == apple_pos:
+                self.snake1.grow_snake()
+                self.snake1.add_points(POINTS_PER_APPLE)
+                self.apple.remove_apple(apple_pos)
+                self.generate_safe_apple_position()
+                self.apple_resets += 1
+                    
+            elif snake2_head == apple_pos:
+                self.snake2.grow_snake()
+                self.snake2.add_points(POINTS_PER_APPLE)
+                self.apple.remove_apple(apple_pos)
+                self.generate_safe_apple_position()
+                self.apple_resets += 1
             
         #wall or self collision
         snake1_collision = self.check_snake_collision(self.snake1)
