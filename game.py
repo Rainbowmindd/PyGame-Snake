@@ -5,7 +5,7 @@ from settings import (BLACK, GREEN, BLUE, UP, DOWN, LEFT, RIGHT, WHITE, MAX_ROUN
 from snake import Snake
 from apple import Apple
 from scoreboard import Scoreboard
-from menu import Menu
+from menu import Menu,FONT_PATH, FONT_SIZE
 
 class Game:
     def __init__(self):
@@ -20,6 +20,7 @@ class Game:
         self.GRID_WIDTH = self.WIDTH // self.GRID_SIZE
         self.GRID_HEIGHT = self.HEIGHT // self.GRID_SIZE
         self.clock = pygame.time.Clock()
+        self.font=pygame.font.Font(FONT_PATH, FONT_SIZE)
 
         self.player1_name = None
         self.player2_name = None
@@ -245,15 +246,13 @@ class Game:
     def draw_game(self):
         self.display.fill(BLACK)
         
+        score1 = self.font.render(f"{self.snake1.player_name}: {self.snake1.score}", True, WHITE)
+        score2 = self.font.render(f"{self.snake2.player_name}: {self.snake2.score}", True, WHITE)
+        round_text = self.font.render(f"Round {self.current_round}/{MAX_ROUNDS}", True, WHITE)
         
-        font = pygame.font.Font(None, 36)
-        score1 = font.render(f"{self.snake1.player_name}: {self.snake1.score}", True, WHITE)
-        score2 = font.render(f"{self.snake2.player_name}: {self.snake2.score}", True, WHITE)
-        round_text = font.render(f"Round {self.current_round}/{MAX_ROUNDS}", True, WHITE)
-        
-        self.display.blit(score1, (10, 10))
-        self.display.blit(score2, (self.WIDTH - 200, 10))
-        self.display.blit(round_text, (self.WIDTH//2 - 50, 10))
+        self.display.blit(score1, (self.WIDTH // 4, 10)) 
+        self.display.blit(score2, ((3 * self.WIDTH) // 4 - score2.get_width(), 10)) 
+        self.display.blit(round_text, (self.WIDTH // 2 - round_text.get_width() // 2, 10))  
         
         
         self.snake1.draw(self.display)
@@ -264,11 +263,9 @@ class Game:
         
     def draw_name_input(self):
         self.display.fill(BLACK)
-        font = pygame.font.Font(None, 48)
     
-        
-        prompt = f"Wpisz nazwę gracza {self.current_player}:"
-        prompt_surface = font.render(prompt, True, WHITE)
+        prompt = f"ENTER PLAYER'S NAME {self.current_player}:"
+        prompt_surface = self.font.render(prompt, True, WHITE)
         prompt_rect = prompt_surface.get_rect(center=(self.WIDTH//2, self.HEIGHT//3))
         self.display.blit(prompt_surface, prompt_rect)
     
@@ -276,17 +273,17 @@ class Game:
         input_text = self.name_input
         if pygame.time.get_ticks() % 1000 < 500:  
             input_text += "|"
-        input_surface = font.render(input_text, True, WHITE)
+        input_surface = self.font.render(input_text, True, WHITE)
         input_rect = input_surface.get_rect(center=(self.WIDTH//2, self.HEIGHT//2))
         self.display.blit(input_surface, input_rect)
     
         instructions = [
-            "ENTER - confirm",
-            "BACKSPACE - delete",
-            "ESC - exit game"
+            "ENTER - CONFIRM",
+            "BACKSPACE - DELETE",
+            "ESC - EXIT GAME"
         ]
     
-        small_font = pygame.font.Font(None, 36)
+        small_font = pygame.font.Font(FONT_PATH, FONT_SIZE - 10)
         for i, instruction in enumerate(instructions):
             inst_surface = small_font.render(instruction, True, WHITE)
             inst_rect = inst_surface.get_rect(center=(self.WIDTH//2, 2*self.HEIGHT//3 + i*40))
