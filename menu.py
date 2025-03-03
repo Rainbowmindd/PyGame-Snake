@@ -2,9 +2,9 @@ import pygame
 import time
 from settings import BLACK, WHITE, RED
 
-# Wczytanie pixel-artowej czcionki
+
 pygame.font.init()
-FONT_PATH = "assets/fonts/PressStart2P-Regular.ttf"  # Upewnij się, że masz tę czcionkę w katalogu assets/fonts
+FONT_PATH = "assets/fonts/PressStart2P-Regular.ttf"  
 FONT_SIZE = 24
 
 class Menu:
@@ -13,7 +13,7 @@ class Menu:
         self.font = pygame.font.Font(FONT_PATH, FONT_SIZE)
         self.width = 800  
         self.height = 600 
-        self.title_alpha = 255  # Do efektu migotania tytułu
+        self.title_alpha = 255 
         self.title_fade_direction = -5
     
     def update_screen_size(self, width, height):
@@ -25,14 +25,14 @@ class Menu:
         text_surface = self.font.render(text, True, color)
         text_rect = text_surface.get_rect(center=position)
         
-        # Efekt przesunięcia dla wybranego przycisku
+   
         offset = -5 if selected else 0
         text_rect.y += offset
         
-        # Pixelowy przycisk - obramowanie
+  
         border_rect = text_rect.inflate(10, 10)
-        pygame.draw.rect(display, WHITE, border_rect, 3)  # Obramowanie
-        pygame.draw.rect(display, BLACK, text_rect)  # Wypełnienie
+        pygame.draw.rect(display, WHITE, border_rect, 3)  
+        pygame.draw.rect(display, BLACK, text_rect) 
         
         display.blit(text_surface, text_rect)
         return text_rect

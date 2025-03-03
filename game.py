@@ -45,6 +45,7 @@ class Game:
         self.selected_option = 0
         self.current_round = 1
         self.running = True
+        self.paused = False
 
         self.apple_resets = 0
         
@@ -163,14 +164,31 @@ class Game:
                         self.running = False
     
     def handle_game_events(self):
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                self.running = False
-            elif event.type == pygame.KEYDOWN:
-                self.snake1.change_direction(event.key)
-                self.snake2.change_direction(event.key)
-                if event.key == pygame.K_ESCAPE:
-                    self.state = "menu"
+        if self.paused:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    self.running = False
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_RETURN: 
+                        self.paused = False
+                    elif event.key == pygame.K_ESCAPE: 
+                        self.state = "menu"
+                        self.paused = False
+                    else:
+                        self.paused = True
+            return
+        else:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    self.running = False
+                elif event.type == pygame.KEYDOWN:
+                    self.snake1.change_direction(event.key)
+                    self.snake2.change_direction(event.key)
+                    if event.key == pygame.K_ESCAPE:
+                        self.state = "menu"
+                    elif event.key == pygame.K_p:
+                        self.paused = True
+
                 
     def check_snake_collision(self, snake):
         head_x, head_y = snake.body[0]
@@ -290,22 +308,46 @@ class Game:
             self.display.blit(inst_surface, inst_rect)
     
         pygame.display.flip()
-        
+    def draw_pause_screen(self):
+        self.display.fill(BLACK)
+
+        large_font = pygame.font.Font(FONT_PATH, FONT_SIZE + 20)
+        pause_text = large_font.render("PAUSED", True, WHITE)
+        pause_rect = pause_text.get_rect(center=(self.WIDTH // 2, self.HEIGHT // 3))
+        self.display.blit(pause_text, pause_rect)
+
+        instructions = [
+            "Press ENTER to resume",
+            "Press ESC to return to the menu"
+        ]
+ 
+        small_font = pygame.font.Font(FONT_PATH, FONT_SIZE)
+        for i, instruction in enumerate(instructions):
+            inst_surface = small_font.render(instruction, True, WHITE)
+            inst_rect = inst_surface.get_rect(center=(self.WIDTH // 2, 2 * self.HEIGHT // 3 + i * 40))
+            self.display.blit(inst_surface, inst_rect)
+
+        pygame.display.flip()
+    
     def run(self):
         while self.running:
-            if self.state == "name_input":
-                self.draw_name_input()
-                self.handle_name_input()
-            elif self.state == "menu":
-                buttons = self.menu.draw_main_menu(self.display, self.selected_option)
-                self.handle_menu_input(buttons)
-            elif self.state == "scores":
-                buttons = self.menu.draw_scores(self.display, self.scoreboard, self.selected_option)
-                self.handle_menu_input(buttons)
-            elif self.state == "game":
+            if self.paused:
+                self.draw_pause_screen()
                 self.handle_game_events()
-                self.update()
-                self.draw_game()
+            else:
+                if self.state == "name_input":
+                    self.draw_name_input()
+                    self.handle_name_input()
+                elif self.state == "menu":
+                    buttons = self.menu.draw_main_menu(self.display, self.selected_option)
+                    self.handle_menu_input(buttons)
+                elif self.state == "scores":
+                    buttons = self.menu.draw_scores(self.display, self.scoreboard, self.selected_option)
+                    self.handle_menu_input(buttons)
+                elif self.state == "game":
+                    self.handle_game_events()
+                    self.update()
+                    self.draw_game()
             
             self.clock.tick(10)
             
