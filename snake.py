@@ -1,8 +1,9 @@
 import pygame
 from settings import GRID_SIZE
+import os
 
 class Snake:
-    def __init__(self, color, start_pos, controls, player_name):
+    def __init__(self, color, start_pos, controls, player_name, head_sprites_folder):
         self.body = [start_pos]  
         self.direction = None
         self.grow = False
@@ -13,6 +14,18 @@ class Snake:
         self.player_name = player_name
         self.width = 800  
         self.height = 600  
+
+        self.head_sprites = {}
+        directions = ['up', 'down', 'left', 'right']
+        for direction in directions:
+            try:
+                sprite_path = os.path.join(head_sprites_folder, f'head_{direction}40.png')
+                sprite = pygame.image.load(sprite_path).convert_alpha()
+                scaled_size = int(GRID_SIZE * 2)
+                sprite = pygame.transform.scale(sprite, (scaled_size, scaled_size))
+                self.head_sprites[direction] = sprite
+            except Exception as e:
+                print(f"Error loading {direction} head sprite: {e}")
         
     def reset(self, start_pos):
         self.body = [start_pos]  
@@ -46,7 +59,6 @@ class Snake:
                 self.can_move = True
                 
     def check_collision(self):
-
         if not self.body: 
             return False
             
@@ -70,5 +82,25 @@ class Snake:
         self.score += points
         
     def draw(self, display):
-        for segment in self.body:
-            pygame.draw.rect(display, self.color, (segment[0], segment[1], GRID_SIZE, GRID_SIZE))
+        for i, segment in enumerate(self.body):
+            if i == 0 and self.direction:
+                scaled_size = int(GRID_SIZE * 2)
+                offset = (scaled_size - GRID_SIZE) // 2
+
+                if self.direction == (0, -GRID_SIZE):  
+                    head_sprite = self.head_sprites.get('up')
+                elif self.direction == (0, GRID_SIZE):  
+                    head_sprite = self.head_sprites.get('down')
+                elif self.direction == (-GRID_SIZE, 0):  
+                    head_sprite = self.head_sprites.get('left')
+                elif self.direction == (GRID_SIZE, 0):  
+                    head_sprite = self.head_sprites.get('right')
+                else:
+                    head_sprite = None
+                
+                if head_sprite:
+                    display.blit(head_sprite, (segment[0] - offset, segment[1] - offset))
+                else:
+                    pygame.draw.rect(display, self.color, (segment[0], segment[1], GRID_SIZE, GRID_SIZE))
+            else:
+                pygame.draw.rect(display, self.color, (segment[0], segment[1], GRID_SIZE, GRID_SIZE))
