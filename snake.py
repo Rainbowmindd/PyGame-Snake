@@ -3,7 +3,7 @@ from settings import GRID_SIZE
 import os
 
 class Snake:
-    def __init__(self, color, start_pos, controls, player_name, head_sprites_folder):
+    def __init__(self, color, start_pos, controls, player_name, head_sprites_folder,body_sprite_folder):
         self.body = [start_pos]  
         self.direction = None
         self.grow = False
@@ -22,11 +22,25 @@ class Snake:
                 sprite_path = os.path.join(head_sprites_folder, f'head_{direction}40.png')
                 sprite = pygame.image.load(sprite_path).convert_alpha()
                 scaled_size = int(GRID_SIZE * 2)
-                sprite = pygame.transform.scale(sprite, (scaled_size, scaled_size))
+                sprite = pygame.transform.scale(sprite, (80,80))
                 self.head_sprites[direction] = sprite
             except Exception as e:
                 print(f"Error loading {direction} head sprite: {e}")
-        
+        try:
+            body_front_path = os.path.join(body_sprite_folder, 'body_front.png')
+            self.body_front_sprite = pygame.image.load(body_front_path).convert_alpha()
+            self.body_front_sprite = pygame.transform.scale(self.body_front_sprite, (40, 40))
+        except Exception as e:
+            print(f"Error loading body front sprite: {e}")
+
+        try:
+            body_side_path = os.path.join(body_sprite_folder, 'body_side.png')
+            self.body_side_sprite = pygame.image.load(body_side_path).convert_alpha()
+            self.body_side_sprite = pygame.transform.scale(self.body_side_sprite, (40, 40))
+        except Exception as e:
+            print(f"Error loading body side sprite: {e}")
+
+
     def reset(self, start_pos):
         self.body = [start_pos]  
         self.direction = None
@@ -103,4 +117,13 @@ class Snake:
                 else:
                     pygame.draw.rect(display, self.color, (segment[0], segment[1], GRID_SIZE, GRID_SIZE))
             else:
-                pygame.draw.rect(display, self.color, (segment[0], segment[1], GRID_SIZE, GRID_SIZE))
+                if self.direction in [(0, -GRID_SIZE), (0, GRID_SIZE)]:
+                    body_sprite = self.body_front_sprite
+                elif self.direction in [(-GRID_SIZE, 0), (GRID_SIZE, 0)]:
+                    body_sprite = self.body_side_sprite
+                else:
+                    body_sprite = None
+                if body_sprite:
+                    display.blit(body_sprite, (segment[0], segment[1]))
+                else:
+                    pygame.draw.rect(display, self.color, (segment[0], segment[1], GRID_SIZE, GRID_SIZE))
