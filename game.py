@@ -56,14 +56,14 @@ class Game:
             pygame.K_DOWN: DOWN,
             pygame.K_LEFT: LEFT,
             pygame.K_RIGHT: RIGHT
-        }, self.player1_name,'assets/sprites/snake_sprite/snake_head')
+        }, self.player1_name,'assets/sprites/snake_sprite/orange_snake')
         
         self.snake2 = Snake(BLUE, ((3*self.GRID_WIDTH//4)*self.GRID_SIZE, (self.GRID_HEIGHT//2)*self.GRID_SIZE), {
             pygame.K_w: UP,
             pygame.K_s: DOWN,
             pygame.K_a: LEFT,
             pygame.K_d: RIGHT
-        }, self.player2_name ,'assets/sprites/snake_sprite/snake_head')
+        }, self.player2_name ,'assets/sprites/snake_sprite/blue_snake')
 
         self.snake1.width = self.WIDTH
         self.snake1.height = self.HEIGHT
