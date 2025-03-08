@@ -3,7 +3,7 @@ from settings import GRID_SIZE
 import os
 
 class Snake:
-    def __init__(self, color, start_pos, controls, player_name, head_sprites_folder,body_sprite_folder):
+    def __init__(self, color, start_pos, controls, player_name, head_sprites_folder,body_sprite_folder,tail_sprites_folder):
         self.body = [start_pos]  
         self.direction = None
         self.grow = False
@@ -40,6 +40,17 @@ class Snake:
             self.body_side_sprite = pygame.transform.scale(self.body_side_sprite, (40, 40))
         except Exception as e:
             print(f"Error loading body side sprite: {e}")
+        
+        self.tail_sprites={}
+        if tail_sprites_folder:
+            for direction in directions:
+                try:
+                    sprite_path = os.path.join(tail_sprites_folder, f'tail_{direction}.png')
+                    sprite = pygame.image.load(sprite_path).convert_alpha()
+                    sprite = pygame.transform.scale(sprite, (40, 40))
+                    self.tail_sprites[direction] = sprite
+                except Exception as e:
+                    print(f"Error loading {direction} tail sprite: {e}")
 
 
     def reset(self, start_pos):
@@ -47,6 +58,7 @@ class Snake:
         self.direction = None
         self.grow = False
         self.can_move = False
+        self.segment_directions = []
         
     def move(self):
         if not self.can_move or self.direction is None:
@@ -102,36 +114,66 @@ class Snake:
         self.score += points
         
     def draw(self, display):
-        for i, segment in enumerate(self.body):
-            if i == 0:
-                scaled_size = int(GRID_SIZE * 2)
-                offset = (scaled_size - GRID_SIZE) // 2
-
-                if self.direction == (0, -GRID_SIZE):  
-                    head_sprite = self.head_sprites.get('up')
-                elif self.direction == (0, GRID_SIZE):  
-                    head_sprite = self.head_sprites.get('down')
-                elif self.direction == (-GRID_SIZE, 0):  
-                    head_sprite = self.head_sprites.get('left')
-                elif self.direction == (GRID_SIZE, 0):  
-                    head_sprite = self.head_sprites.get('right')
+        # Rysuj ciało od ogona do szyi (z wyjątkiem głowy)
+        for i in range(len(self.body) - 1, 0, -1):
+            segment = self.body[i]
+            
+            # Ostatni segment - ogon
+            if i == len(self.body) - 1 and self.tail_sprites and len(self.body) > 1:
+                # Określ kierunek ogona (przeciwny do kierunku ruchu ostatniego segmentu)
+                if i-1 < len(self.segment_directions):
+                    tail_dir = self.segment_directions[-1]  # Kierunek przedostatniego segmentu
                 else:
-                    head_sprite = None
+                    tail_dir = self.direction if self.direction else (0, 0)
                 
-                if head_sprite:
-                    display.blit(head_sprite, (segment[0] - offset, segment[1] - offset))
+                # Wybierz odpowiedni sprite ogona
+                if tail_dir == (0, -GRID_SIZE):  # Ogon skierowany w dół (ruch w górę)
+                    tail_sprite = self.tail_sprites.get('down')
+                elif tail_dir == (0, GRID_SIZE):  # Ogon skierowany w górę (ruch w dół)
+                    tail_sprite = self.tail_sprites.get('up')
+                elif tail_dir == (-GRID_SIZE, 0):  # Ogon skierowany w prawo (ruch w lewo)
+                    tail_sprite = self.tail_sprites.get('right')
+                elif tail_dir == (GRID_SIZE, 0):  # Ogon skierowany w lewo (ruch w prawo)
+                    tail_sprite = self.tail_sprites.get('left')
+                else:
+                    tail_sprite = None
+                
+                if tail_sprite:
+                    display.blit(tail_sprite, (segment[0], segment[1]))
                 else:
                     pygame.draw.rect(display, self.color, (segment[0], segment[1], GRID_SIZE, GRID_SIZE))
-            else:  
-               
+            # Środkowe segmenty ciała
+            elif i != len(self.body) - 1:  
                 if i-1 < len(self.segment_directions):
                     segment_dir = self.segment_directions[i-1]
                 else:
                     segment_dir = self.direction if self.direction else (0, 0)
                 
-                if segment_dir in [(0, -GRID_SIZE), (0, GRID_SIZE)]: 
+                if segment_dir in [(0, -GRID_SIZE), (0, GRID_SIZE)]:  # Pionowy ruch (góra/dół)
                     display.blit(self.body_front_sprite, (segment[0], segment[1]))
-                elif segment_dir in [(-GRID_SIZE, 0), (GRID_SIZE, 0)]: 
+                elif segment_dir in [(-GRID_SIZE, 0), (GRID_SIZE, 0)]:  # Poziomy ruch (lewo/prawo)
                     display.blit(self.body_side_sprite, (segment[0], segment[1]))
                 else:
                     pygame.draw.rect(display, self.color, (segment[0], segment[1], GRID_SIZE, GRID_SIZE))
+        
+        # Rysuj głowę
+        if self.body:
+            head = self.body[0]
+            scaled_size = int(GRID_SIZE * 2)
+            offset = (scaled_size - GRID_SIZE) // 2
+
+            if self.direction == (0, -GRID_SIZE):  
+                head_sprite = self.head_sprites.get('up')
+            elif self.direction == (0, GRID_SIZE):  
+                head_sprite = self.head_sprites.get('down')
+            elif self.direction == (-GRID_SIZE, 0):  
+                head_sprite = self.head_sprites.get('left')
+            elif self.direction == (GRID_SIZE, 0):  
+                head_sprite = self.head_sprites.get('right')
+            else:
+                head_sprite = None
+            
+            if head_sprite:
+                display.blit(head_sprite, (head[0] - offset, head[1] - offset))
+            else:
+                pygame.draw.rect(display, self.color, (head[0], head[1], GRID_SIZE, GRID_SIZE))
