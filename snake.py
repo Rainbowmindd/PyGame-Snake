@@ -171,7 +171,7 @@ class Snake:
             elif self.direction == (GRID_SIZE, 0):  
                 head_sprite = self.head_sprites.get('right')
             else:
-                head_sprite = None
+                head_sprite = self.head_sprites.get('down')
             
             if head_sprite:
                 display.blit(head_sprite, (head[0] - offset, head[1] - offset))
