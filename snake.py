@@ -129,9 +129,9 @@ class Snake:
                 else:
                     segment_dir = self.direction if self.direction else (0, 0)
                 
-                if segment_dir in [(0, -GRID_SIZE), (0, GRID_SIZE)]:  # Pionowy ruch (góra/dół)
+                if segment_dir in [(0, -GRID_SIZE), (0, GRID_SIZE)]: 
                     display.blit(self.body_front_sprite, (segment[0], segment[1]))
-                elif segment_dir in [(-GRID_SIZE, 0), (GRID_SIZE, 0)]:  # Poziomy ruch (lewo/prawo)
+                elif segment_dir in [(-GRID_SIZE, 0), (GRID_SIZE, 0)]: 
                     display.blit(self.body_side_sprite, (segment[0], segment[1]))
                 else:
                     pygame.draw.rect(display, self.color, (segment[0], segment[1], GRID_SIZE, GRID_SIZE))
