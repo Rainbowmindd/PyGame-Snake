@@ -114,26 +114,25 @@ class Snake:
         self.score += points
         
     def draw(self, display):
-        # Rysuj ciało od ogona do szyi (z wyjątkiem głowy)
+
         for i in range(len(self.body) - 1, 0, -1):
             segment = self.body[i]
             
-            # Ostatni segment - ogon
+      
             if i == len(self.body) - 1 and self.tail_sprites and len(self.body) > 1:
-                # Określ kierunek ogona (przeciwny do kierunku ruchu ostatniego segmentu)
                 if i-1 < len(self.segment_directions):
-                    tail_dir = self.segment_directions[-1]  # Kierunek przedostatniego segmentu
+                    tail_dir = self.segment_directions[-1] 
                 else:
                     tail_dir = self.direction if self.direction else (0, 0)
                 
-                # Wybierz odpowiedni sprite ogona
-                if tail_dir == (0, -GRID_SIZE):  # Ogon skierowany w dół (ruch w górę)
+               
+                if tail_dir == (0, -GRID_SIZE): 
                     tail_sprite = self.tail_sprites.get('down')
-                elif tail_dir == (0, GRID_SIZE):  # Ogon skierowany w górę (ruch w dół)
+                elif tail_dir == (0, GRID_SIZE):  
                     tail_sprite = self.tail_sprites.get('up')
-                elif tail_dir == (-GRID_SIZE, 0):  # Ogon skierowany w prawo (ruch w lewo)
+                elif tail_dir == (-GRID_SIZE, 0):  
                     tail_sprite = self.tail_sprites.get('right')
-                elif tail_dir == (GRID_SIZE, 0):  # Ogon skierowany w lewo (ruch w prawo)
+                elif tail_dir == (GRID_SIZE, 0): 
                     tail_sprite = self.tail_sprites.get('left')
                 else:
                     tail_sprite = None
@@ -142,21 +141,20 @@ class Snake:
                     display.blit(tail_sprite, (segment[0], segment[1]))
                 else:
                     pygame.draw.rect(display, self.color, (segment[0], segment[1], GRID_SIZE, GRID_SIZE))
-            # Środkowe segmenty ciała
+
             elif i != len(self.body) - 1:  
                 if i-1 < len(self.segment_directions):
                     segment_dir = self.segment_directions[i-1]
                 else:
                     segment_dir = self.direction if self.direction else (0, 0)
                 
-                if segment_dir in [(0, -GRID_SIZE), (0, GRID_SIZE)]:  # Pionowy ruch (góra/dół)
+                if segment_dir in [(0, -GRID_SIZE), (0, GRID_SIZE)]: 
                     display.blit(self.body_front_sprite, (segment[0], segment[1]))
-                elif segment_dir in [(-GRID_SIZE, 0), (GRID_SIZE, 0)]:  # Poziomy ruch (lewo/prawo)
+                elif segment_dir in [(-GRID_SIZE, 0), (GRID_SIZE, 0)]: 
                     display.blit(self.body_side_sprite, (segment[0], segment[1]))
                 else:
                     pygame.draw.rect(display, self.color, (segment[0], segment[1], GRID_SIZE, GRID_SIZE))
         
-        # Rysuj głowę
         if self.body:
             head = self.body[0]
             scaled_size = int(GRID_SIZE * 2)
