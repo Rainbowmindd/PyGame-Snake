@@ -14,6 +14,7 @@ class Snake:
         self.player_name = player_name
         self.width = 800  
         self.height = 600  
+        self.segment_directions=[]
 
         self.head_sprites = {}
         directions = ['up', 'down', 'left', 'right']
@@ -51,17 +52,22 @@ class Snake:
         if not self.can_move or self.direction is None:
             return
         
-        if not self.grow and len(self.body) > 1:
-            self.body.pop()  
-        else:
-            self.grow = False  
-            
-     
+       
         head_x, head_y = self.body[0]
         dir_x, dir_y = self.direction
         new_head = (head_x + dir_x, head_y + dir_y)
-     
         self.body.insert(0, new_head)
+        
+
+        self.segment_directions.insert(0, self.direction)
+        
+       
+        if not self.grow and len(self.body) > 1:
+            self.body.pop()
+            if len(self.segment_directions) > len(self.body) - 1:
+                self.segment_directions.pop()
+        else:
+            self.grow = False
         
     def change_direction(self, key):
         if key in self.controls:
@@ -97,7 +103,7 @@ class Snake:
         
     def draw(self, display):
         for i, segment in enumerate(self.body):
-            if i == 0 and self.direction:
+            if i == 0:
                 scaled_size = int(GRID_SIZE * 2)
                 offset = (scaled_size - GRID_SIZE) // 2
 
@@ -116,14 +122,16 @@ class Snake:
                     display.blit(head_sprite, (segment[0] - offset, segment[1] - offset))
                 else:
                     pygame.draw.rect(display, self.color, (segment[0], segment[1], GRID_SIZE, GRID_SIZE))
-            else:
-                if self.direction in [(0, -GRID_SIZE), (0, GRID_SIZE)]:
-                    body_sprite = self.body_front_sprite
-                elif self.direction in [(-GRID_SIZE, 0), (GRID_SIZE, 0)]:
-                    body_sprite = self.body_side_sprite
+            else:  
+               
+                if i-1 < len(self.segment_directions):
+                    segment_dir = self.segment_directions[i-1]
                 else:
-                    body_sprite = None
-                if body_sprite:
-                    display.blit(body_sprite, (segment[0], segment[1]))
+                    segment_dir = self.direction if self.direction else (0, 0)
+                
+                if segment_dir in [(0, -GRID_SIZE), (0, GRID_SIZE)]:  # Pionowy ruch (góra/dół)
+                    display.blit(self.body_front_sprite, (segment[0], segment[1]))
+                elif segment_dir in [(-GRID_SIZE, 0), (GRID_SIZE, 0)]:  # Poziomy ruch (lewo/prawo)
+                    display.blit(self.body_side_sprite, (segment[0], segment[1]))
                 else:
                     pygame.draw.rect(display, self.color, (segment[0], segment[1], GRID_SIZE, GRID_SIZE))
