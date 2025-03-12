@@ -52,17 +52,18 @@ class Game:
         
     def initialize_snake(self):
         self.snake1 = Snake(GREEN, ((self.GRID_WIDTH//4)*self.GRID_SIZE, (self.GRID_HEIGHT//2)*self.GRID_SIZE), {
-            pygame.K_UP: UP,
-            pygame.K_DOWN: DOWN,
-            pygame.K_LEFT: LEFT,
-            pygame.K_RIGHT: RIGHT
-        }, self.player1_name,'assets/sprites/snake_sprite/orange_snake','assets/sprites/snake_sprite/orange_snake','assets/sprites/snake_sprite/orange_snake')
-        
-        self.snake2 = Snake(BLUE, ((3*self.GRID_WIDTH//4)*self.GRID_SIZE, (self.GRID_HEIGHT//2)*self.GRID_SIZE), {
+            
             pygame.K_w: UP,
             pygame.K_s: DOWN,
             pygame.K_a: LEFT,
             pygame.K_d: RIGHT
+        }, self.player1_name,'assets/sprites/snake_sprite/orange_snake','assets/sprites/snake_sprite/orange_snake','assets/sprites/snake_sprite/orange_snake')
+        
+        self.snake2 = Snake(BLUE, ((3*self.GRID_WIDTH//4)*self.GRID_SIZE, (self.GRID_HEIGHT//2)*self.GRID_SIZE), {
+            pygame.K_UP: UP,
+            pygame.K_DOWN: DOWN,
+            pygame.K_LEFT: LEFT,
+            pygame.K_RIGHT: RIGHT
         }, self.player2_name ,'assets/sprites/snake_sprite/blue_snake','assets/sprites/snake_sprite/blue_snake','assets/sprites/snake_sprite/blue_snake')
 
         self.snake1.width = self.WIDTH
@@ -268,10 +269,10 @@ class Game:
         score2 = self.font.render(f"{self.snake2.player_name}: {self.snake2.score}", True, WHITE)
         round_text = self.font.render(f"Round {self.current_round}/{MAX_ROUNDS}", True, WHITE)
         
-        self.display.blit(score1, (self.WIDTH // 4, 10)) 
-        self.display.blit(score2, ((3 * self.WIDTH) // 4 - score2.get_width(), 10)) 
+
+        self.display.blit(score1, (self.WIDTH // 4 - score1.get_width() // 2, 10))  
+        self.display.blit(score2, ((3 * self.WIDTH) // 4 - score2.get_width() // 2, 10))  
         self.display.blit(round_text, (self.WIDTH // 2 - round_text.get_width() // 2, 10))  
-        
         
         self.snake1.draw(self.display)
         self.snake2.draw(self.display)
