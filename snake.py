@@ -112,6 +112,10 @@ class Snake:
         
     def add_points(self, points):
         self.score += points
+    
+    #penalty system
+    def remove_points(self, points):
+        self.score -= points
         
     def draw(self, display):
 
