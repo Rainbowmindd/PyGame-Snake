@@ -13,7 +13,7 @@ class Apple:
         self.last_spawn_time = 0
 
         self.image = pygame.image.load("assets/sprites/apple.png")
-        scale_factor = 5 
+        scale_factor = 4
         self.image_original = pygame.transform.scale(
             self.image, 
             (int(GRID_SIZE * scale_factor), int(GRID_SIZE * scale_factor))
