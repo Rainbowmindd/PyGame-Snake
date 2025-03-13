@@ -1,6 +1,6 @@
 import pygame
 from settings import (BLACK, GREEN, BLUE, UP, DOWN, LEFT, RIGHT, WHITE, MAX_ROUNDS, 
-                      POINTS_PER_APPLE, GRID_SIZE)
+                      POINTS_PER_APPLE,PENALTY, GRID_SIZE)
 
 from snake import Snake
 from apple import Apple
@@ -238,19 +238,25 @@ class Game:
                 self.generate_safe_apple_position()
                 self.apple_resets += 1
             
-        #wall or self collision
+        #wall or self collision with penalty
         snake1_collision = self.check_snake_collision(self.snake1)
+        if snake1_collision:
+            self.snake1.remove_points(PENALTY)
         snake2_collision = self.check_snake_collision(self.snake2)
+        if snake2_collision:
+            self.snake2.remove_points(PENALTY)
         
         #players collision
         for segment in self.snake2.body:
             if snake1_head == (tuple(segment) if isinstance(segment, list) else segment):
                 snake1_collision = True
+                self.snake1.remove_points(PENALTY)
                 break
                 
         for segment in self.snake1.body:
             if snake2_head == (tuple(segment) if isinstance(segment, list) else segment):
                 snake2_collision = True
+                self.snake2.remove_points(PENALTY)
                 break
         
 
